@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using Daem0n.WeChat.Handlers;
 using Daem0n.WeChat.Logic;
@@ -32,10 +34,17 @@ namespace Daem0n.WeChat
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddSingleton<BaseMessageHandler, CustomMessageHandler>();
+            services.AddControllersWithViews().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
+            });
             services.AddHandlers();
             services.AddSenparcGlobalServices(Configuration).AddSenparcWeixinServices(Configuration);
+            services.AddMemoryCache();
+            services.AddMvc(option =>
+            {
+                option.EnableEndpointRouting = false;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,7 +61,9 @@ namespace Daem0n.WeChat
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                 name: "default",
+                 pattern: "{controller=wechat}/{action=index}/{id?}");
             });
 
             // 启动 CO2NET 全局注册，必须！

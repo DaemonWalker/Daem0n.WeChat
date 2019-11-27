@@ -1,5 +1,4 @@
 ﻿using Daem0n.WeChat.Handlers;
-using Daem0n.WeChat.Message;
 using Microsoft.Extensions.DependencyInjection;
 using Senparc.NeuChar.Context;
 using Senparc.NeuChar.Entities;
